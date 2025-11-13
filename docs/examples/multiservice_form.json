@@ -1,0 +1,237 @@
+{
+  "schemaVersion": "1.0.0",
+  "title": {
+    "en": "Spa Booking",
+    "it": "Prenotazione Spa"
+  },
+  "sections": [
+    {
+      "id": "services",
+      "label": {
+        "en": "Select Services",
+        "it": "Seleziona Servizi"
+      },
+      "order": 0
+    },
+    {
+      "id": "datetime",
+      "label": {
+        "en": "When",
+        "it": "Quando"
+      },
+      "order": 1
+    },
+    {
+      "id": "extras",
+      "label": {
+        "en": "Additional Options",
+        "it": "Opzioni Aggiuntive"
+      },
+      "visible_when": {
+        "field": "services",
+        "operator": "isNotEmpty",
+        "value": true
+      },
+      "order": 2
+    },
+    {
+      "id": "contact",
+      "label": {
+        "en": "Contact Details",
+        "it": "Dettagli Contatto"
+      },
+      "order": 3
+    }
+  ],
+  "fields": [
+    {
+      "type": "checkbox",
+      "name": "services",
+      "label": {
+        "en": "Services",
+        "it": "Servizi"
+      },
+      "required": true,
+      "multiple": true,
+      "options_source": "services",
+      "section": "services",
+      "order": 0
+    },
+    {
+      "type": "radio",
+      "name": "therapist_preference",
+      "label": {
+        "en": "Therapist Preference",
+        "it": "Preferenza Terapista"
+      },
+      "options": [
+        {
+          "value": "any",
+          "label": {
+            "en": "No Preference",
+            "it": "Nessuna Preferenza"
+          }
+        },
+        {
+          "value": "male",
+          "label": {
+            "en": "Male",
+            "it": "Uomo"
+          }
+        },
+        {
+          "value": "female",
+          "label": {
+            "en": "Female",
+            "it": "Donna"
+          }
+        }
+      ],
+      "default": "any",
+      "visible_when": {
+        "any": [
+          {
+            "field": "services",
+            "operator": "contains",
+            "value": "massage"
+          },
+          {
+            "field": "services",
+            "operator": "contains",
+            "value": "facial"
+          }
+        ]
+      },
+      "section": "services",
+      "order": 1
+    },
+    {
+      "type": "date",
+      "name": "date",
+      "label": {
+        "en": "Preferred Date",
+        "it": "Data Preferita"
+      },
+      "required": true,
+      "min": "today",
+      "section": "datetime",
+      "order": 0
+    },
+    {
+      "type": "select",
+      "name": "time_preference",
+      "label": {
+        "en": "Time Preference",
+        "it": "Preferenza Oraria"
+      },
+      "options": [
+        {
+          "value": "morning",
+          "label": {
+            "en": "Morning (9am-12pm)",
+            "it": "Mattina (9:00-12:00)"
+          }
+        },
+        {
+          "value": "afternoon",
+          "label": {
+            "en": "Afternoon (12pm-5pm)",
+            "it": "Pomeriggio (12:00-17:00)"
+          }
+        },
+        {
+          "value": "evening",
+          "label": {
+            "en": "Evening (5pm-9pm)",
+            "it": "Sera (17:00-21:00)"
+          }
+        }
+      ],
+      "section": "datetime",
+      "order": 1
+    },
+    {
+      "type": "checkbox",
+      "name": "sauna_access",
+      "label": {
+        "en": "Add Sauna Access (+€20)",
+        "it": "Aggiungi Accesso Sauna (+€20)"
+      },
+      "section": "extras",
+      "order": 0
+    },
+    {
+      "type": "checkbox",
+      "name": "aromatherapy",
+      "label": {
+        "en": "Add Aromatherapy (+€15)",
+        "it": "Aggiungi Aromaterapia (+€15)"
+      },
+      "visible_when": {
+        "field": "services",
+        "operator": "contains",
+        "value": "massage"
+      },
+      "section": "extras",
+      "order": 1
+    },
+    {
+      "type": "text",
+      "name": "first_name",
+      "label": {
+        "en": "First Name",
+        "it": "Nome"
+      },
+      "required": true,
+      "section": "contact",
+      "order": 0
+    },
+    {
+      "type": "email",
+      "name": "email",
+      "label": {
+        "en": "Email",
+        "it": "Email"
+      },
+      "required": true,
+      "section": "contact",
+      "order": 1
+    },
+    {
+      "type": "tel",
+      "name": "phone",
+      "label": {
+        "en": "Phone",
+        "it": "Telefono"
+      },
+      "required": true,
+      "section": "contact",
+      "order": 2
+    },
+    {
+      "type": "textarea",
+      "name": "medical_conditions",
+      "label": {
+        "en": "Medical Conditions or Allergies",
+        "it": "Condizioni Mediche o Allergie"
+      },
+      "helpText": {
+        "en": "Please inform us of any relevant medical conditions",
+        "it": "Informaci di eventuali condizioni mediche rilevanti"
+      },
+      "section": "contact",
+      "order": 3
+    },
+    {
+      "type": "checkbox",
+      "name": "gdpr_consent",
+      "label": {
+        "en": "I accept the privacy policy",
+        "it": "Accetto la privacy policy"
+      },
+      "required": true,
+      "section": "contact",
+      "order": 4
+    }
+  ]
+}

@@ -1,0 +1,854 @@
+openapi: 3.1.0
+info:
+  title: Booking SaaS API
+  version: 1.0.0
+  description: |
+    Multi-tenant headless booking system REST API.
+
+    ## Authentication
+    - **JWT Bearer Token**: For staff endpoints (dashboard/PWA)
+    - **API Key**: For public widget endpoints
+  contact:
+    email: api@booking-saas.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.booking-saas.com/v1
+    description: Production
+  - url: https://staging-api.booking-saas.com/v1
+    description: Staging
+  - url: http://localhost:3000/v1
+    description: Local development
+
+tags:
+  - name: Config
+    description: Widget configuration endpoints
+  - name: Availability
+    description: Slot availability queries
+  - name: Bookings
+    description: Booking management
+  - name: Forms
+    description: Dynamic form schemas
+  - name: Push
+    description: Push notification subscriptions
+  - name: Calendar
+    description: ICS calendar feeds
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authenticated users
+
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for widget public access
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+        - statusCode
+      properties:
+        error:
+          type: string
+          example: "BadRequest"
+        message:
+          type: string
+          example: "Invalid input parameters"
+        statusCode:
+          type: integer
+          example: 400
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    Tenant:
+      type: object
+      required:
+        - id
+        - name
+        - domain
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          example: "Ristorante Da Luigi"
+        domain:
+          type: string
+          example: "daluigi.booking-saas.com"
+        settings:
+          type: object
+          properties:
+            timezone:
+              type: string
+              example: "Europe/Rome"
+            currency:
+              type: string
+              example: "EUR"
+            language:
+              type: string
+              example: "it"
+
+    Service:
+      type: object
+      required:
+        - id
+        - tenantId
+        - name
+        - duration
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Cena con Menu Degustazione"
+        description:
+          type: string
+        duration:
+          type: integer
+          description: "Duration in minutes"
+          example: 120
+        capacity:
+          type: object
+          properties:
+            min:
+              type: integer
+              example: 2
+            max:
+              type: integer
+              example: 8
+        price:
+          type: number
+          format: float
+          example: 75.00
+        active:
+          type: boolean
+          default: true
+
+    Venue:
+      type: object
+      required:
+        - id
+        - tenantId
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Sala Principale"
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            postalCode:
+              type: string
+            country:
+              type: string
+        coordinates:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: double
+            lng:
+              type: number
+              format: double
+
+    Resource:
+      type: object
+      required:
+        - id
+        - tenantId
+        - name
+        - type
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Tavolo 5"
+        type:
+          type: string
+          enum: [table, room, equipment, staff]
+        capacity:
+          type: integer
+          example: 4
+        venueId:
+          type: string
+          format: uuid
+        metadata:
+          type: object
+          additionalProperties: true
+
+    Slot:
+      type: object
+      required:
+        - start
+        - end
+        - status
+      properties:
+        start:
+          type: string
+          format: date-time
+          example: "2025-01-15T19:00:00Z"
+        end:
+          type: string
+          format: date-time
+          example: "2025-01-15T21:00:00Z"
+        status:
+          type: string
+          enum: [free, waitlist, full]
+          description: |
+            - free: Slot available for booking
+            - waitlist: Slot full but accepts waitlist
+            - full: Slot completely unavailable
+        reason:
+          type: string
+          description: "Human-readable explanation for status"
+          example: "Fully booked"
+        resourceIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        price:
+          type: number
+          format: float
+
+    Booking:
+      type: object
+      required:
+        - id
+        - tenantId
+        - status
+        - startTime
+        - endTime
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        serviceIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        venueId:
+          type: string
+          format: uuid
+        resourceIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [pending, confirmed, arrived, completed, cancelled, no-show]
+        partySize:
+          type: integer
+          example: 4
+        notes:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Customer:
+      type: object
+      required:
+        - id
+        - tenantId
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+          example: "Mario"
+        lastName:
+          type: string
+          example: "Rossi"
+        email:
+          type: string
+          format: email
+          example: "mario.rossi@example.com"
+        phone:
+          type: string
+          example: "+39 333 1234567"
+        gdprConsent:
+          type: boolean
+          description: "User has consented to data processing"
+        marketingConsent:
+          type: boolean
+          description: "User has consented to marketing communications"
+
+    Form:
+      type: object
+      required:
+        - id
+        - tenantId
+        - schemaVersion
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Restaurant Booking Form"
+        description:
+          type: string
+        schemaVersion:
+          type: string
+          example: "1.0.0"
+        schema:
+          type: object
+          description: "Full JSON Schema as per docs/form.schema.json"
+        active:
+          type: boolean
+          default: true
+
+    ConfigResponse:
+      type: object
+      required:
+        - tenant
+        - form
+      properties:
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+        form:
+          $ref: '#/components/schemas/Form'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+        venues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Venue'
+
+    AvailabilityRequest:
+      type: object
+      required:
+        - date
+        - serviceIds
+      properties:
+        date:
+          type: string
+          format: date
+          example: "2025-01-15"
+        timeRange:
+          type: object
+          properties:
+            start:
+              type: string
+              format: time
+              example: "18:00"
+            end:
+              type: string
+              format: time
+              example: "22:00"
+        serviceIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        venueId:
+          type: string
+          format: uuid
+        partySize:
+          type: integer
+          example: 4
+        constraints:
+          type: object
+          additionalProperties: true
+
+    AvailabilityResponse:
+      type: object
+      properties:
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/Slot'
+        meta:
+          type: object
+          properties:
+            date:
+              type: string
+              format: date
+            timezone:
+              type: string
+
+    CreateBookingRequest:
+      type: object
+      required:
+        - startTime
+        - serviceIds
+        - customer
+      properties:
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        serviceIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        venueId:
+          type: string
+          format: uuid
+        partySize:
+          type: integer
+        customer:
+          type: object
+          required:
+            - firstName
+            - email
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+            email:
+              type: string
+              format: email
+            phone:
+              type: string
+            gdprConsent:
+              type: boolean
+            marketingConsent:
+              type: boolean
+        notes:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+
+    PushSubscription:
+      type: object
+      required:
+        - endpoint
+        - keys
+      properties:
+        endpoint:
+          type: string
+          format: uri
+        keys:
+          type: object
+          required:
+            - p256dh
+            - auth
+          properties:
+            p256dh:
+              type: string
+            auth:
+              type: string
+
+paths:
+  /config:
+    get:
+      tags:
+        - Config
+      summary: Get widget configuration
+      description: Returns tenant config, form schema, and available services
+      operationId: getConfig
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: X-Tenant-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: formId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Tenant or form not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /availability:
+    post:
+      tags:
+        - Availability
+      summary: Query slot availability
+      description: Returns available time slots based on criteria
+      operationId: checkAvailability
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: X-Tenant-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityRequest'
+            examples:
+              simple:
+                value:
+                  date: "2025-01-15"
+                  serviceIds: ["550e8400-e29b-41d4-a716-446655440000"]
+                  partySize: 4
+              advanced:
+                value:
+                  date: "2025-01-15"
+                  timeRange:
+                    start: "19:00"
+                    end: "21:00"
+                  serviceIds: ["550e8400-e29b-41d4-a716-446655440000"]
+                  venueId: "660e8400-e29b-41d4-a716-446655440000"
+                  partySize: 6
+      responses:
+        '200':
+          description: Availability results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /bookings:
+    post:
+      tags:
+        - Bookings
+      summary: Create new booking
+      description: Creates a booking with automatic conflict detection
+      operationId: createBooking
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: X-Tenant-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+            example:
+              startTime: "2025-01-15T19:00:00Z"
+              endTime: "2025-01-15T21:00:00Z"
+              serviceIds: ["550e8400-e29b-41d4-a716-446655440000"]
+              partySize: 4
+              customer:
+                firstName: "Mario"
+                lastName: "Rossi"
+                email: "mario.rossi@example.com"
+                phone: "+39 333 1234567"
+                gdprConsent: true
+                marketingConsent: false
+              notes: "Vegetarian options needed"
+      responses:
+        '201':
+          description: Booking created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: Invalid input or slot not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /bookings/{id}:
+    get:
+      tags:
+        - Bookings
+      summary: Get booking details
+      operationId: getBooking
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: Booking not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      tags:
+        - Bookings
+      summary: Update booking status
+      description: Staff endpoint to update booking status
+      operationId: updateBooking
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [confirmed, arrived, completed, cancelled, no-show]
+                notes:
+                  type: string
+            example:
+              status: "arrived"
+              notes: "Customer checked in"
+      responses:
+        '200':
+          description: Booking updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Booking not found
+
+  /forms:
+    get:
+      tags:
+        - Forms
+      summary: List forms for tenant
+      operationId: listForms
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of forms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Form'
+
+  /forms/{id}:
+    put:
+      tags:
+        - Forms
+      summary: Update form schema
+      operationId: updateForm
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Form'
+      responses:
+        '200':
+          description: Form updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
+
+  /push/subscribe:
+    post:
+      tags:
+        - Push
+      summary: Subscribe to push notifications
+      operationId: subscribePush
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushSubscription'
+      responses:
+        '201':
+          description: Subscription created
+        '400':
+          description: Invalid subscription
+
+  /push/test:
+    post:
+      tags:
+        - Push
+      summary: Send test notification
+      operationId: testPush
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Test notification sent
+        '404':
+          description: No subscription found
+
+  /cal/venue/{id}.ics:
+    get:
+      tags:
+        - Calendar
+      summary: Get venue calendar feed
+      operationId: getVenueCalendar
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: ICS calendar feed
+          content:
+            text/calendar:
+              schema:
+                type: string
+                format: binary
+
+  /cal/resource/{id}.ics:
+    get:
+      tags:
+        - Calendar
+      summary: Get resource calendar feed
+      operationId: getResourceCalendar
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: ICS calendar feed
+          content:
+            text/calendar:
+              schema:
+                type: string
+                format: binary

@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://booking-saas.com/schemas/form.json",
+  "title": "Booking Form Schema",
+  "description": "JSON Schema for dynamic booking forms with conditional logic",
+  "type": "object",
+  "required": ["schemaVersion", "sections", "fields"],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of form schema",
+      "examples": ["1.0.0"]
+    },
+    "title": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Form title internationalized",
+      "examples": [
+        {
+          "en": "Book a Table",
+          "it": "Prenota un Tavolo"
+        }
+      ]
+    },
+    "description": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/section"
+      },
+      "minItems": 1
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/field"
+      },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "section": {
+      "type": "object",
+      "required": ["id", "label"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "label": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "visible_when": {
+          "$ref": "#/$defs/condition"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": ["type", "name", "label"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "text",
+            "email",
+            "tel",
+            "number",
+            "textarea",
+            "select",
+            "radio",
+            "checkbox",
+            "date",
+            "time",
+            "datetime",
+            "file"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "label": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "placeholder": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "helpText": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "required": {
+          "type": "boolean",
+          "default": false
+        },
+        "min": {
+          "type": ["number", "string"]
+        },
+        "max": {
+          "type": ["number", "string"]
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["value", "label"],
+            "properties": {
+              "value": {
+                "type": ["string", "number", "boolean"]
+              },
+              "label": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "options_source": {
+          "type": "string",
+          "enum": ["services", "venues", "resources"],
+          "description": "Dynamic options from API"
+        },
+        "multiple": {
+          "type": "boolean",
+          "default": false
+        },
+        "default": {
+          "type": ["string", "number", "boolean", "array"]
+        },
+        "visible_when": {
+          "$ref": "#/$defs/condition"
+        },
+        "section": {
+          "type": "string",
+          "description": "Section ID this field belongs to"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ariaDescriptionId": {
+          "type": "string",
+          "description": "ID of element containing description for screen readers"
+        }
+      }
+    },
+    "condition": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/condition_group"
+        },
+        {
+          "$ref": "#/$defs/condition_rule"
+        }
+      ]
+    },
+    "condition_group": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": ["all"],
+          "properties": {
+            "all": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "required": ["any"],
+          "properties": {
+            "any": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
+    "condition_rule": {
+      "type": "object",
+      "required": ["field", "operator", "value"],
+      "properties": {
+        "field": {
+          "type": "string",
+          "description": "Field name to evaluate"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "equals",
+            "notEquals",
+            "in",
+            "notIn",
+            "contains",
+            "notContains",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "isEmpty",
+            "isNotEmpty"
+          ]
+        },
+        "value": {
+          "description": "Value to compare against",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
