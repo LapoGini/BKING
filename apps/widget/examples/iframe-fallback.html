@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RBM Widget - Iframe Fallback</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: system-ui, sans-serif;
+        background: #fff;
+      }
+      #widget-container {
+        min-height: 600px;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="widget-container">
+      <rbm-booking></rbm-booking>
+    </div>
+
+    <script type="module" src="../dist/widget.js"></script>
+    <script type="module">
+      // Read URL parameters
+      const params = new URLSearchParams(window.location.search);
+      const widget = document.querySelector("rbm-booking");
+
+      // Set attributes from URL params
+      widget.setAttribute("tenant", params.get("tenant") || "");
+      widget.setAttribute("form-id", params.get("formId") || "");
+      widget.setAttribute("locale", params.get("locale") || "it");
+      widget.setAttribute("theme", params.get("theme") || "auto");
+      widget.setAttribute(
+        "api-url",
+        params.get("apiUrl") || "http://localhost:3000",
+      );
+
+      // Auto-resize iframe via postMessage
+      const resizeObserver = new ResizeObserver((entries) => {
+        const height = entries[0].target.scrollHeight;
+        window.parent.postMessage(
+          {
+            type: "rbm:resize",
+            height: height,
+          },
+          "*",
+        );
+      });
+
+      resizeObserver.observe(document.body);
+
+      // Forward events to parent window
+      ["rbm:booking:created", "rbm:booking:error", "rbm:availability"].forEach(
+        (eventType) => {
+          document.addEventListener(eventType, (e) => {
+            window.parent.postMessage(
+              {
+                type: eventType,
+                detail: e.detail,
+              },
+              "*",
+            );
+          });
+        },
+      );
+    </script>
+  </body>
+</html>

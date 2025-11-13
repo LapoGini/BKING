@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RBM Widget - Theme Examples</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 2rem;
+        background: #f5f5f5;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 3rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      .theme-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .theme-card h2 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 1.25rem;
+      }
+      .theme-card p {
+        margin: 0 0 1rem 0;
+        color: #666;
+        font-size: 0.875rem;
+      }
+      .code-block {
+        background: #1a1a1a;
+        color: #0f0;
+        padding: 0.75rem;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.75rem;
+        overflow-x: auto;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎨 RBM Booking Widget - Theme Examples</h1>
+
+    <div class="grid">
+      <!-- Light Theme -->
+      <div class="theme-card">
+        <h2>Light Theme</h2>
+        <p>Standard light mode with default colors</p>
+        <div class="code-block">
+          &lt;rbm-booking theme="light"&gt;&lt;/rbm-booking&gt;
+        </div>
+        <rbm-booking
+          tenant="demo"
+          form-id="classic"
+          locale="it"
+          theme="light"
+          api-url="http://localhost:3000"
+        ></rbm-booking>
+      </div>
+
+      <!-- Dark Theme -->
+      <div class="theme-card" style="background: #1a1a1a">
+        <h2 style="color: #fff">Dark Theme</h2>
+        <p style="color: #aaa">Dark mode with high contrast</p>
+        <div class="code-block">
+          &lt;rbm-booking theme="dark"&gt;&lt;/rbm-booking&gt;
+        </div>
+        <rbm-booking
+          tenant="demo"
+          form-id="classic"
+          locale="it"
+          theme="dark"
+          api-url="http://localhost:3000"
+        ></rbm-booking>
+      </div>
+
+      <!-- Purple Theme -->
+      <div class="theme-card">
+        <h2>Purple Theme</h2>
+        <p>Custom purple primary color</p>
+        <div class="code-block">
+          &lt;rbm-booking color-scheme='{"primary":"#8b5cf6"}'
+          &gt;&lt;/rbm-booking&gt;
+        </div>
+        <rbm-booking
+          tenant="demo"
+          form-id="classic"
+          locale="it"
+          theme="light"
+          color-scheme='{"primary":"#8b5cf6","primary-hover":"#7c3aed"}'
+          api-url="http://localhost:3000"
+        ></rbm-booking>
+      </div>
+
+      <!-- Green Theme -->
+      <div class="theme-card">
+        <h2>Green Theme</h2>
+        <p>Nature-inspired green palette</p>
+        <div class="code-block">
+          &lt;rbm-booking color-scheme='{"primary":"#10b981"}'
+          &gt;&lt;/rbm-booking&gt;
+        </div>
+        <rbm-booking
+          tenant="demo"
+          form-id="classic"
+          locale="it"
+          theme="light"
+          color-scheme='{"primary":"#10b981","primary-hover":"#059669"}'
+          api-url="http://localhost:3000"
+        ></rbm-booking>
+      </div>
+
+      <!-- Orange Theme -->
+      <div class="theme-card">
+        <h2>Orange Theme</h2>
+        <p>Warm orange accent color</p>
+        <div class="code-block">
+          &lt;rbm-booking color-scheme='{"primary":"#f97316"}'
+          &gt;&lt;/rbm-booking&gt;
+        </div>
+        <rbm-booking
+          tenant="demo"
+          form-id="classic"
+          locale="it"
+          theme="light"
+          color-scheme='{"primary":"#f97316","primary-hover":"#ea580c"}'
+          api-url="http://localhost:3000"
+        ></rbm-booking>
+      </div>
+
+      <!-- Custom Full Palette -->
+      <div class="theme-card">
+        <h2>Custom Palette</h2>
+        <p>Fully customized color scheme</p>
+        <div class="code-block">
+          &lt;rbm-booking color-scheme='{ "primary":"#ec4899", "bg":"#fdf2f8",
+          "surface":"#fce7f3" }' &gt;&lt;/rbm-booking&gt;
+        </div>
+        <rbm-booking
+          tenant="demo"
+          form-id="classic"
+          locale="it"
+          theme="light"
+          color-scheme='{"primary":"#ec4899","primary-hover":"#db2777","bg":"#fdf2f8","surface":"#fce7f3"}'
+          api-url="http://localhost:3000"
+        ></rbm-booking>
+      </div>
+    </div>
+
+    <script type="module" src="../dist/widget.js"></script>
+    <script>
+      console.log("Theme examples loaded");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RBM Booking Widget - Demo</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        background: #f5f5f5;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 2rem;
+      }
+      .demo-section {
+        margin: 2rem 0;
+        padding: 2rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: white;
+      }
+      .demo-section h2 {
+        margin-top: 0;
+        color: #0066cc;
+      }
+      .theme-switcher {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 4px;
+      }
+      .theme-switcher label {
+        margin-right: 1rem;
+      }
+      .theme-switcher select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .event-log {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: #1a1a1a;
+        color: #0f0;
+        font-family: monospace;
+        font-size: 0.875rem;
+        border-radius: 4px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .event-log-title {
+        color: #fff;
+        margin-bottom: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎯 RBM Booking Widget Demo</h1>
+
+    <div class="theme-switcher">
+      <label>
+        Theme:
+        <select id="theme-select">
+          <option value="auto">Auto (System)</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="demo-section">
+      <h2>Default Widget</h2>
+      <rbm-booking
+        id="widget-1"
+        tenant="demo"
+        form-id="classic"
+        locale="it"
+        theme="auto"
+        api-url="http://localhost:3000"
+      ></rbm-booking>
+    </div>
+
+    <div class="demo-section">
+      <h2>Custom Colors (Purple Theme)</h2>
+      <rbm-booking
+        id="widget-2"
+        tenant="demo"
+        form-id="classic"
+        locale="en"
+        theme="light"
+        color-scheme='{"primary":"#8b5cf6","success":"#10b981"}'
+        api-url="http://localhost:3000"
+      ></rbm-booking>
+    </div>
+
+    <div class="event-log">
+      <div class="event-log-title">Event Log:</div>
+      <div id="log"></div>
+    </div>
+
+    <script type="module" src="../dist/widget.js"></script>
+    <script>
+      // Theme switcher
+      document
+        .getElementById("theme-select")
+        .addEventListener("change", (e) => {
+          document.querySelectorAll("rbm-booking").forEach((widget) => {
+            widget.setAttribute("theme", e.target.value);
+          });
+        });
+
+      // Event logging
+      const log = document.getElementById("log");
+      function addLog(message) {
+        const entry = document.createElement("div");
+        entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        log.insertBefore(entry, log.firstChild);
+      }
+
+      // Event listeners
+      document.addEventListener("rbm:booking:created", (e) => {
+        console.log("✅ Booking created:", e.detail);
+        addLog(`✅ Booking created! ID: ${e.detail.booking.id}`);
+        alert(
+          `Prenotazione confermata! Codice: ${e.detail.booking.confirmationCode}`,
+        );
+      });
+
+      document.addEventListener("rbm:booking:error", (e) => {
+        console.error("❌ Booking error:", e.detail);
+        addLog(`❌ Error: ${e.detail.error.message}`);
+      });
+
+      document.addEventListener("rbm:availability", (e) => {
+        console.log("📅 Checking availability:", e.detail);
+        addLog(`📅 Checking availability...`);
+      });
+
+      // Log widget version
+      if (window.RbmBookingWidget) {
+        addLog(`🚀 Widget loaded (v${window.RbmBookingWidget.version})`);
+      }
+    </script>
+  </body>
+</html>

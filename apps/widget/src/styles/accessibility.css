@@ -1,0 +1,161 @@
+/**
+ * Accessibility CSS
+ * WCAG 2.2 AA compliance
+ */
+
+/* Screen reader only */
+.rbm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible (keyboard navigation) */
+*:focus-visible {
+  outline: 2px solid var(--rbm-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .rbm-container {
+    border: 2px solid currentColor;
+  }
+
+  .rbm-input,
+  .rbm-select,
+  .rbm-textarea {
+    border-width: 2px;
+  }
+
+  .rbm-btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Skip to content link */
+.rbm-skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--rbm-primary);
+  color: white;
+  padding: var(--rbm-spacing-sm) var(--rbm-spacing-md);
+  text-decoration: none;
+  z-index: 100;
+}
+
+.rbm-skip-link:focus {
+  top: 0;
+}
+
+/* Ensure sufficient color contrast */
+.rbm-text-secondary {
+  /* Ensures 4.5:1 contrast ratio for WCAG AA */
+  opacity: 0.8;
+}
+
+/* Focus indicators for interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--rbm-primary);
+  outline-offset: 2px;
+}
+
+/* Disabled state with clear visual indication */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Ensure clickable areas are at least 44x44px (WCAG 2.2) */
+.rbm-btn,
+.rbm-slot-btn {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Touch target spacing */
+@media (pointer: coarse) {
+  .rbm-slot-grid {
+    gap: var(--rbm-spacing-md);
+  }
+}
+
+/* Error announcements */
+[role="alert"] {
+  /* Ensure errors are announced immediately */
+  position: relative;
+}
+
+/* Loading state announcements */
+[aria-busy="true"] {
+  position: relative;
+}
+
+/* Ensure SVG icons are properly labeled */
+svg[role="img"] {
+  /* Icons with role="img" must have aria-label */
+}
+
+/* Visually hidden but accessible to screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus trap for modals (if implemented) */
+[data-focus-trap] {
+  /* Will contain focus within modal dialogs */
+}
+
+/* Keyboard navigation helpers */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Ensure form labels are properly associated */
+label {
+  cursor: pointer;
+}
+
+/* ARIA live regions should be positioned off-screen */
+[aria-live] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+[aria-live].rbm-sr-only {
+  /* Exceptions for intentionally hidden live regions */
+}

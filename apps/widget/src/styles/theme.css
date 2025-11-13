@@ -1,0 +1,354 @@
+/**
+ * Theme CSS with Custom Properties
+ * Customizable via color-scheme attribute
+ */
+
+:host {
+  /* Colors */
+  --rbm-primary: #0066cc;
+  --rbm-primary-hover: #0052a3;
+  --rbm-secondary: #6c757d;
+  --rbm-success: #28a745;
+  --rbm-danger: #dc3545;
+  --rbm-warning: #ffc107;
+  --rbm-info: #17a2b8;
+
+  --rbm-bg: #ffffff;
+  --rbm-surface: #f8f9fa;
+  --rbm-border: #dee2e6;
+  --rbm-text: #212529;
+  --rbm-text-secondary: #6c757d;
+
+  /* Typography */
+  --rbm-font:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --rbm-font-size: 16px;
+  --rbm-line-height: 1.5;
+
+  /* Spacing */
+  --rbm-spacing-xs: 0.25rem;
+  --rbm-spacing-sm: 0.5rem;
+  --rbm-spacing-md: 1rem;
+  --rbm-spacing-lg: 1.5rem;
+  --rbm-spacing-xl: 2rem;
+
+  /* Border radius */
+  --rbm-radius: 0.375rem;
+  --rbm-radius-sm: 0.25rem;
+  --rbm-radius-lg: 0.5rem;
+
+  /* Shadows */
+  --rbm-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --rbm-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --rbm-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --rbm-transition: all 0.2s ease-in-out;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --rbm-bg: #1a1a1a;
+  --rbm-surface: #2d2d2d;
+  --rbm-border: #404040;
+  --rbm-text: #f8f9fa;
+  --rbm-text-secondary: #adb5bd;
+}
+
+/* Auto theme (prefers-color-scheme) */
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    --rbm-bg: #1a1a1a;
+    --rbm-surface: #2d2d2d;
+    --rbm-border: #404040;
+    --rbm-text: #f8f9fa;
+    --rbm-text-secondary: #adb5bd;
+  }
+}
+
+/* Container */
+.rbm-container {
+  font-family: var(--rbm-font);
+  font-size: var(--rbm-font-size);
+  line-height: var(--rbm-line-height);
+  color: var(--rbm-text);
+  background: var(--rbm-bg);
+  padding: var(--rbm-spacing-lg);
+  border-radius: var(--rbm-radius);
+  box-shadow: var(--rbm-shadow);
+}
+
+/* Form */
+.rbm-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rbm-spacing-md);
+}
+
+/* Section */
+.rbm-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rbm-spacing-md);
+  padding: var(--rbm-spacing-lg);
+  background: var(--rbm-surface);
+  border-radius: var(--rbm-radius);
+}
+
+.rbm-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: var(--rbm-spacing-sm);
+}
+
+.rbm-section-description {
+  color: var(--rbm-text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: var(--rbm-spacing-sm);
+}
+
+/* Field */
+.rbm-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rbm-spacing-xs);
+}
+
+.rbm-label {
+  font-weight: 500;
+  color: var(--rbm-text);
+}
+
+.rbm-required {
+  color: var(--rbm-danger);
+  margin-left: var(--rbm-spacing-xs);
+}
+
+/* Inputs */
+.rbm-input,
+.rbm-select,
+.rbm-textarea {
+  padding: var(--rbm-spacing-sm) var(--rbm-spacing-md);
+  border: 1px solid var(--rbm-border);
+  border-radius: var(--rbm-radius-sm);
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--rbm-text);
+  background: var(--rbm-bg);
+  transition: var(--rbm-transition);
+}
+
+.rbm-input:hover,
+.rbm-select:hover,
+.rbm-textarea:hover {
+  border-color: var(--rbm-primary);
+}
+
+.rbm-input:focus,
+.rbm-select:focus,
+.rbm-textarea:focus {
+  outline: 2px solid var(--rbm-primary);
+  outline-offset: 2px;
+  border-color: var(--rbm-primary);
+}
+
+.rbm-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.rbm-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: var(--rbm-primary);
+}
+
+/* Buttons */
+.rbm-btn {
+  padding: var(--rbm-spacing-sm) var(--rbm-spacing-lg);
+  border: none;
+  border-radius: var(--rbm-radius);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--rbm-transition);
+}
+
+.rbm-btn-primary {
+  background: var(--rbm-primary);
+  color: white;
+}
+
+.rbm-btn-primary:hover {
+  background: var(--rbm-primary-hover);
+}
+
+.rbm-btn-primary:focus {
+  outline: 2px solid var(--rbm-primary);
+  outline-offset: 2px;
+}
+
+.rbm-btn-secondary {
+  background: var(--rbm-secondary);
+  color: white;
+}
+
+.rbm-btn-secondary:hover {
+  background: #5a6268;
+}
+
+/* Error and Help Text */
+.rbm-error {
+  color: var(--rbm-danger);
+  font-size: 0.875rem;
+  min-height: 1.25rem;
+}
+
+.rbm-help {
+  color: var(--rbm-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Loading */
+.rbm-loading {
+  text-align: center;
+  padding: var(--rbm-spacing-xl);
+  color: var(--rbm-text-secondary);
+}
+
+/* Availability Grid */
+.rbm-availability {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rbm-spacing-lg);
+}
+
+.rbm-availability-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rbm-availability-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.rbm-date-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rbm-spacing-sm);
+}
+
+.rbm-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--rbm-spacing-sm);
+}
+
+.rbm-slot-btn {
+  padding: var(--rbm-spacing-md);
+  background: var(--rbm-surface);
+  border: 1px solid var(--rbm-border);
+  border-radius: var(--rbm-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--rbm-transition);
+}
+
+.rbm-slot-btn:hover {
+  background: var(--rbm-primary);
+  color: white;
+  border-color: var(--rbm-primary);
+}
+
+.rbm-no-slots {
+  text-align: center;
+  padding: var(--rbm-spacing-xl);
+  color: var(--rbm-text-secondary);
+}
+
+/* Confirmation */
+.rbm-confirmation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--rbm-spacing-lg);
+  text-align: center;
+  padding: var(--rbm-spacing-xl);
+}
+
+.rbm-confirmation-icon {
+  color: var(--rbm-success);
+}
+
+.rbm-confirmation-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.rbm-confirmation-code {
+  padding: var(--rbm-spacing-lg);
+  background: var(--rbm-surface);
+  border-radius: var(--rbm-radius);
+}
+
+.rbm-confirmation-code-label {
+  font-size: 0.875rem;
+  color: var(--rbm-text-secondary);
+  margin-bottom: var(--rbm-spacing-xs);
+}
+
+.rbm-confirmation-code-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.rbm-confirmation-details {
+  color: var(--rbm-text-secondary);
+}
+
+/* Error Boundary */
+.rbm-error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--rbm-spacing-lg);
+  text-align: center;
+  padding: var(--rbm-spacing-xl);
+}
+
+.rbm-error-icon {
+  color: var(--rbm-danger);
+}
+
+.rbm-error-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.rbm-error-details {
+  margin-top: var(--rbm-spacing-md);
+  text-align: left;
+  width: 100%;
+  max-width: 600px;
+}
+
+.rbm-error-details summary {
+  cursor: pointer;
+  font-weight: 500;
+  padding: var(--rbm-spacing-sm);
+}
+
+.rbm-error-details pre {
+  margin-top: var(--rbm-spacing-sm);
+  padding: var(--rbm-spacing-md);
+  background: var(--rbm-surface);
+  border-radius: var(--rbm-radius-sm);
+  overflow-x: auto;
+  font-size: 0.75rem;
+}
