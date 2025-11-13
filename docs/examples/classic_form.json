@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "1.0.0",
+  "title": {
+    "en": "Restaurant Booking",
+    "it": "Prenotazione Ristorante"
+  },
+  "description": {
+    "en": "Book a table at our restaurant",
+    "it": "Prenota un tavolo nel nostro ristorante"
+  },
+  "sections": [
+    {
+      "id": "datetime",
+      "label": {
+        "en": "When",
+        "it": "Quando"
+      },
+      "order": 0
+    },
+    {
+      "id": "details",
+      "label": {
+        "en": "Details",
+        "it": "Dettagli"
+      },
+      "order": 1
+    },
+    {
+      "id": "contact",
+      "label": {
+        "en": "Your Information",
+        "it": "I Tuoi Dati"
+      },
+      "order": 2
+    }
+  ],
+  "fields": [
+    {
+      "type": "date",
+      "name": "date",
+      "label": {
+        "en": "Date",
+        "it": "Data"
+      },
+      "required": true,
+      "min": "today",
+      "section": "datetime",
+      "order": 0
+    },
+    {
+      "type": "time",
+      "name": "time",
+      "label": {
+        "en": "Time",
+        "it": "Ora"
+      },
+      "required": true,
+      "section": "datetime",
+      "order": 1
+    },
+    {
+      "type": "number",
+      "name": "party_size",
+      "label": {
+        "en": "Number of Guests",
+        "it": "Numero di Ospiti"
+      },
+      "required": true,
+      "min": 1,
+      "max": 12,
+      "default": 2,
+      "section": "details",
+      "order": 0
+    },
+    {
+      "type": "select",
+      "name": "service",
+      "label": {
+        "en": "Service",
+        "it": "Servizio"
+      },
+      "required": true,
+      "options_source": "services",
+      "section": "details",
+      "order": 1
+    },
+    {
+      "type": "textarea",
+      "name": "notes",
+      "label": {
+        "en": "Special Requests",
+        "it": "Richieste Speciali"
+      },
+      "placeholder": {
+        "en": "Allergies, dietary restrictions, etc.",
+        "it": "Allergie, restrizioni alimentari, ecc."
+      },
+      "required": false,
+      "section": "details",
+      "order": 2
+    },
+    {
+      "type": "text",
+      "name": "first_name",
+      "label": {
+        "en": "First Name",
+        "it": "Nome"
+      },
+      "required": true,
+      "section": "contact",
+      "order": 0
+    },
+    {
+      "type": "text",
+      "name": "last_name",
+      "label": {
+        "en": "Last Name",
+        "it": "Cognome"
+      },
+      "required": true,
+      "section": "contact",
+      "order": 1
+    },
+    {
+      "type": "email",
+      "name": "email",
+      "label": {
+        "en": "Email",
+        "it": "Email"
+      },
+      "required": true,
+      "section": "contact",
+      "order": 2
+    },
+    {
+      "type": "tel",
+      "name": "phone",
+      "label": {
+        "en": "Phone",
+        "it": "Telefono"
+      },
+      "required": true,
+      "pattern": "^\\+?[0-9\\s-]{10,20}$",
+      "section": "contact",
+      "order": 3
+    },
+    {
+      "type": "checkbox",
+      "name": "gdpr_consent",
+      "label": {
+        "en": "I agree to the privacy policy",
+        "it": "Accetto la privacy policy"
+      },
+      "required": true,
+      "section": "contact",
+      "order": 4
+    },
+    {
+      "type": "checkbox",
+      "name": "marketing_consent",
+      "label": {
+        "en": "I want to receive promotional emails",
+        "it": "Voglio ricevere email promozionali"
+      },
+      "required": false,
+      "section": "contact",
+      "order": 5
+    }
+  ]
+}
