@@ -1,0 +1,9 @@
+{
+  "name": "@booking-saas/sdk-wp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'WP SDK build - TODO'",
+    "lint": "echo 'WP SDK lint - TODO'"
+  }
+}

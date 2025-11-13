@@ -1,0 +1,18 @@
+{
+  "name": "@booking-saas/core-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Core API dev - TODO'",
+    "build": "echo 'Core API build - TODO'",
+    "test": "echo 'Core API test - TODO'",
+    "lint": "eslint . --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@booking-saas/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@booking-saas/sdk-wix",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Wix SDK build - TODO'",
+    "lint": "echo 'Wix SDK lint - TODO'"
+  }
+}

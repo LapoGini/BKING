@@ -1,0 +1,9 @@
+{
+  "name": "@booking-saas/sdk-shopify",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Shopify SDK build - TODO'",
+    "lint": "echo 'Shopify SDK lint - TODO'"
+  }
+}

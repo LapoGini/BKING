@@ -1,0 +1,45 @@
+{
+  "name": "Booking SaaS Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers-contrib/features/pnpm:2": {
+      "version": "8.14.0"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "bradlc.vscode-tailwindcss",
+        "prisma.prisma",
+        "firsttris.vscode-jest-runner"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true
+        }
+      }
+    }
+  },
+  "postCreateCommand": "pnpm install",
+  "forwardPorts": [3000, 3001, 3002, 5432, 6379],
+  "portsAttributes": {
+    "3000": {
+      "label": "Core API",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "PWA",
+      "onAutoForward": "notify"
+    },
+    "3002": {
+      "label": "Widget Demo",
+      "onAutoForward": "notify"
+    }
+  }
+}
