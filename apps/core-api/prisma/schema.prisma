@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Multi-tenant: ogni tabella ha tenantId indexed
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  domain    String   @unique
+  settings  Json     @default("{}")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users           User[]
+  services        Service[]
+  venues          Venue[]
+  resources       Resource[]
+  forms           Form[]
+  bookings        Booking[]
+  customers       Customer[]
+  policies        Policy[]
+  auditLogs       AuditLog[]
+  pushSubscriptions PushSubscription[]
+
+  @@map("tenants")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  tenantId   String
+  email      String   @unique
+  password   String
+  firstName  String?
+  lastName   String?
+  role       UserRole @default(STAFF)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  auditLogs AuditLog[]
+
+  @@index([tenantId])
+  @@index([email])
+  @@map("users")
+}
+
+enum UserRole {
+  OWNER
+  MANAGER
+  STAFF
+}
+
+model Service {
+  id          String  @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  duration    Int // minutes
+  capacity    Json? // {min, max}
+  price       Float?
+  active      Boolean @default(true)
+  metadata    Json    @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant     Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  bookings   BookingService[]
+
+  @@index([tenantId])
+  @@index([tenantId, active])
+  @@map("services")
+}
+
+model Venue {
+  id          String  @id @default(uuid())
+  tenantId    String
+  name        String
+  address     Json?
+  coordinates Json? // {lat, lng}
+  active      Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  resources  Resource[]
+  bookings   Booking[]
+
+  @@index([tenantId])
+  @@map("venues")
+}
+
+model Resource {
+  id        String   @id @default(uuid())
+  tenantId  String
+  venueId   String?
+  name      String
+  type      ResourceType
+  capacity  Int?
+  metadata  Json     @default("{}")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant   Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  venue    Venue?             @relation(fields: [venueId], references: [id], onDelete: SetNull)
+  bookings BookingResource[]
+
+  @@index([tenantId])
+  @@index([venueId])
+  @@map("resources")
+}
+
+enum ResourceType {
+  TABLE
+  ROOM
+  EQUIPMENT
+  STAFF
+}
+
+model Form {
+  id            String   @id @default(uuid())
+  tenantId      String
+  name          String
+  description   String?
+  schemaVersion String   @default("1.0.0")
+  schema        Json // Full JSON Schema
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, active])
+  @@map("forms")
+}
+
+model Booking {
+  id         String        @id @default(uuid())
+  tenantId   String
+  customerId String
+  venueId    String?
+  startTime  DateTime
+  endTime    DateTime
+  status     BookingStatus @default(PENDING)
+  partySize  Int
+  notes      String?
+  metadata   Json          @default("{}")
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer  Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  venue     Venue?             @relation(fields: [venueId], references: [id], onDelete: SetNull)
+  services  BookingService[]
+  resources BookingResource[]
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, startTime])
+  @@index([customerId])
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  ARRIVED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// Junction table: Booking <-> Service (many-to-many)
+model BookingService {
+  id        String   @id @default(uuid())
+  bookingId String
+  serviceId String
+  createdAt DateTime @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([bookingId, serviceId])
+  @@map("booking_services")
+}
+
+// Junction table: Booking <-> Resource (many-to-many)
+model BookingResource {
+  id         String   @id @default(uuid())
+  bookingId  String
+  resourceId String
+  createdAt  DateTime @default(now())
+
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([bookingId, resourceId])
+  @@map("booking_resources")
+}
+
+model Customer {
+  id              String   @id @default(uuid())
+  tenantId        String
+  firstName       String?
+  lastName        String?
+  email           String?
+  phone           String?
+  gdprConsent     Boolean  @default(false)
+  marketingConsent Boolean @default(false)
+  metadata        Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@index([tenantId])
+  @@index([tenantId, email])
+  @@index([tenantId, phone])
+  @@map("customers")
+}
+
+model Policy {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  type        String // "cancellation", "booking_window", etc.
+  rules       Json
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("policies")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  tenantId  String
+  userId    String?
+  action    String // "create", "update", "delete"
+  entity    String // "booking", "service", etc.
+  entityId  String
+  changes   Json? // Before/after
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([tenantId, entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model PushSubscription {
+  id         String   @id @default(uuid())
+  tenantId   String
+  userId     String? // Nullable per future expansion
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("push_subscriptions")
+}
